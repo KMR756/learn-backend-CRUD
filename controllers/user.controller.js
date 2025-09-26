@@ -31,3 +31,35 @@ export const register = async (req, res) => {
     console.log(error);
   }
 };
+
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(403).json({
+        success: false,
+        message: "all field required",
+      });
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(403).json({
+        success: false,
+        message: "inconnect email or password",
+      });
+    }
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    if (!isPasswordMatch) {
+      return res.status(403).json({
+        success: false,
+        message: "incorrect password",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: `wellcome back ${user.fullName}`,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
