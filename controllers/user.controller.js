@@ -9,14 +9,14 @@ export const register = async (req, res) => {
         message: "All field are required",
       });
     }
-    const user = await User.findOne(email);
+    const user = await User.findOne({ email });
     if (user) {
       return res.status(403).json({
         success: false,
         message: "user already registered",
       });
     }
-    const hashedPassword = bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     await User.create({
       fullName,
       email,
