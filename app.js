@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import connectDb from "./db/database.js";
 import userRouter from "./routes/user.route.js";
+import todoRouter from "./routes/todo.route.js";
 dotenv.config();
 const app = express();
 
@@ -9,6 +10,7 @@ connectDb();
 
 app.use(express.json());
 app.use("/api/v1/user", userRouter);
+app.use("/api/v1/todo", todoRouter);
 
 const PORT = process.env.PORT || 3000;
 
