@@ -32,3 +32,31 @@ export const getAllTodos = async (req, res) => {
     console.log(error);
   }
 };
+
+export const updateTodo = async (req, res) => {
+  try {
+    const todoId = req.params.todoId;
+    const { title, description } = req.body;
+    // const todo = await Todo.findById(todoId);
+    // todo.title = title;
+    // todo.description = description;
+    const todo = await Todo.findByIdAndUpdate(
+      todoId,
+      { title, description },
+      { new: true }
+    );
+    if (!todo) {
+      return res.status(404).json({
+        success: false,
+        message: "todo is not found",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "todo update succesfully",
+      todo,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
