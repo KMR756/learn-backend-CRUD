@@ -1,7 +1,7 @@
-import { User } from "../models/user.model.js";
+import { User } from "../models/user.js";
 import bcrypt from "bcrypt";
 import validator from "validator";
-
+import jwt from "jsonwebtoken";
 export const register = async (req, res) => {
   try {
     const { fullName, email, password } = req.body;
@@ -77,7 +77,14 @@ export const login = async (req, res) => {
         .status(401)
         .json({ success: false, message: "Incorrect password." });
     }
-
+    const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
+      expiresIn: "1d",
+    });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production,sameSite:"strict',
+      maxAge: 15 * 60 * 1000,
+    });
     return res.status(200).json({
       success: true,
       message: `Welcome back ${user.fullName}`,
@@ -86,5 +93,16 @@ export const login = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export const logout = async (_, res) => {
+  try {
+    return res.status(200).cookie("token", "", { maxAge: 0 }).json({
+      success: true,
+      message: "user logout successfully",
+    });
+  } catch (error) {
+    console.log(error);
   }
 };
